@@ -1,0 +1,50 @@
+# Packages
+install.packages("psych")
+install.packages("hnp")
+install.packages("pscl")
+library(readxl)
+library(MASS)
+library(pscl)
+library(hnp)
+library(car)
+library(psych)
+
+# Entry
+setwd("C:/Users/raiss/OneDrive/Documentos")
+dados <- read_excel("TCC/Dados reincidência.xlsx")
+head(dados)
+str(dados)
+
+# Tables
+tabela_freq <- table(dados$reincidencia);tabela_freq
+tabela_freq <- table(dados$Usa_drogas);tabela_freq
+tabela_freq <- table(dados$estuda);tabela_freq
+tabela_freq <- table(dados$familia_usa_droga);tabela_freq
+tabela_freq <- table(dados$filho_ou_gravida);tabela_freq
+tabela_freq <- table(dados$mora_com_quem);tabela_freq
+
+# Boxplot
+Boxplot(dados$reincidencia)
+Boxplot(dados$Idade)
+
+describe(dados$reincidencia)
+describe(dados$Idade)
+
+# Poisson
+formula = reincidencia ~ -1 + Usa_drogas + Idade + estuda + familia_usa_droga + filho_ou_gravida + mora_com_quem
+
+modelo_poisson <- glm(formula,data = dados,family = poisson)
+summary(modelo_poisson)
+
+hnp(modelo_poisson)
+
+# Binomial negativa 
+modelo_bn <- glm.nb(formula,data = dados, link = log)
+summary(modelo_bn)
+hnp(modelo_bn)
+
+deviance1 <- deviance(modelo_poisson)
+deviance2 <- deviance(modelo_bn)
+cat("Deviance do modelo poisson:", deviance1, "\n")
+cat("Deviance do modelo binomial negativa:", deviance2, "\n")
+
